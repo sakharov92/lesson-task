@@ -1,25 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import {InputComponent} from "./components/InputComponent/InputComponent";
+import {ImageList} from "./components/ImageList/ImageList";
+import {useState} from 'react'
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const key = `19845645-a0c6eba89c2d765e51efc1d07`;
+    const buildRequest = (request) => {
+        return `https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo`
+    }
+    const [data, setData] = useState();
+
+
+    const updateRequest = (request) => {
+        if (request) {
+            (
+                async () => {
+                    const answer = await fetch(buildRequest(request));
+                    if (answer.status === 200) {
+                        const dataJson = await answer.json();
+                        setData(dataJson);
+                    }
+                })()
+        }
+    };
+
+
+    return (
+        <div className="App">
+            <InputComponent updateRequest={updateRequest}/>
+            {(
+                () => {
+                    if (data) {
+                        return <ImageList data={data}/>
+                    }
+                })()}
+        </div>
+    );
 }
 
 export default App;
